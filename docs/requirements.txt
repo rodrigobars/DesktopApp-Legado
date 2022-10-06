@@ -1,0 +1,7 @@
+selenium
+pandas
+webdriver_manager
+PySimpleGUI
+pyautogui
+openpyxl
+win32com
