@@ -52,7 +52,6 @@ def irp():
         Selected = Select(CritériodeValor)
         Selected.select_by_index(2)
 
-
     def PreçoUni(x, driver):
         wdw = WebDriverWait(driver, 20)
         ValorUnitário = wdw.until(
@@ -60,8 +59,7 @@ def irp():
                 (By.XPATH, '//*[@id="div_Item"]/table[2]/tbody/tr[2]/td[5]/input')
             )
         )
-        ValorUnitário.send_keys(str(x * 1000))
-
+        ValorUnitário.send_keys(str(round(x, 2) * 1000))
 
     def ValorSigiloso(driver):
         wdw = WebDriverWait(driver, 20)
@@ -75,10 +73,8 @@ def irp():
         )
         ValorSigiloso.click()
 
-
     def Descrição(x, driver):
         # Verificando se o primeiro campo de descrição está usado...
-        wdw = WebDriverWait(driver, 20)
         try:
             driver.find_element(By.XPATH, 
                 "//textarea[contains(@class, 'fieldReadOnly')]")
@@ -95,17 +91,24 @@ def irp():
             Primeiro.send_keys(x)
 
     def localEquantidade(x, driver):
+        sleep(0.5)
         driver.find_element(By.NAME, 'itemIRPMunicipioEntrega.municipio.nome').send_keys('Niterói/RJ')
+        sleep(0.5)
         driver.execute_script('consultarMunicipio(this);')
+        sleep(0.5)
         Janelas = driver.window_handles
         driver.switch_to.window(Janelas[1])
+        sleep(0.5)
         driver.execute_script("window.opener.retornarConsultaMunicipio('58653;Niterói/RJ');window.close();")
+        sleep(1)
         driver.switch_to.window(Janelas[0])
         qtd = driver.find_element(By.XPATH, 
             '//*[@id="div_Item"]/fieldset/table/tbody/tr[2]/td[3]/input'
         )
         qtd.send_keys(str(x))
+        sleep(0.5)
         driver.execute_script("incluiMunicipio('divLocaisEntregaItemIRP');")
+        sleep(1)
 
     def WindowManager(driver):
         sleep(1)
@@ -130,9 +133,14 @@ def irp():
                     driver.switch_to.window(Janelas[0])
                     # Aqui na hora de salvar abriu um pop-up, portanto, devemos fecha-lo
 
-    def Inclusão_Item(x, driver, início):
+    def Inclusão_Item(x, driver, início, checkbox, teste):
 
-        for item in range(início, (len(x.iloc[:, 0]))):
+        if teste == True:
+            fim = início+1
+        else:
+            fim = len(x.iloc[:, 0])
+
+        for item in range(início, fim):
             # Ele precisa ir para a página de onde pertence o item
             if (item+1)>20:
                 aux = (item+1)/20
@@ -160,7 +168,10 @@ def irp():
             ValorSigiloso(driver)
 
             # Preenche a descrição
-            Descrição(x.iloc[item, 0], driver)
+            if checkbox == True:
+                Descrição(f"Fornecimento de acordo com a especificação contida no Termo de Referência. {x.iloc[item, 0]}", driver)
+            else:
+                Descrição(x.iloc[item, 0], driver)
 
             # Preenche a quantidade
             localEquantidade(x.iloc[item, 3], driver)
@@ -177,7 +188,7 @@ def irp():
             WindowManager(driver)
             sleep(1)
 
-    def Programa(Login, Senha, NúmeroIRP, BaseDado, início, Path):
+    def Programa(Login, Senha, NúmeroIRP, BaseDado, início, checkbox, teste):
         # Chamada de tela
         url = "https://www.comprasnet.gov.br/seguro/loginPortal.asp"
         # Informando o Path para o arquivo "chromedriver.exe" e armazenando em "driver"
@@ -254,7 +265,7 @@ def irp():
         )
 
         # Chamando a função de inclusão de itens:
-        Inclusão_Item(BaseDado, driver, início)
+        Inclusão_Item(BaseDado, driver, início, checkbox, teste)
         print("\n\n\nSUCESSO!\n\n\n")
 
     gui.theme_background_color("Beige")
@@ -328,10 +339,31 @@ def irp():
                     gui.Input(size=(3, 1), key="Início"),
                 ],
                 [gui.T("", background_color="Beige")],
+                [
+                    gui.Checkbox(
+                        "Inserir \"Fornecimento de acordo com a especificação contida\n no Termo de Referência.\" no início da descrição de cada item",
+                        default=False,
+                        font="Vicasso",
+                        text_color="black",
+                        background_color="Beige",
+                        key="-IN-"
+                    ),
+                ],
+                [
+                    gui.Checkbox(
+                        "Teste",
+                        default=False,
+                        font="Vicasso",
+                        text_color="black",
+                        background_color="Beige",
+                        key="-IN2-"
+                    ),
+                ],
+                [gui.T("", background_color="Beige")],
                 [gui.Button("Iniciar", size=(10, 1), key="_START_")],
             ]
 
-            self.window = gui.Window("SIASGNet IRP").Layout(self.layout)
+            self.window = gui.Window("BOT IRP").Layout(self.layout)
 
         def Iniciar(self):
             while True:
@@ -366,12 +398,14 @@ def irp():
                         print("iniciando...")
                         Start = True
 
-                if self.event is None:
+                if self.event is None or self.event == gui.WIN_CLOSED or self.event=="Exit":
                     print("parou")
                     break
 
                 if self.event == "_START_" and Start == True:
-                    Programa(Login, Senha, NúmeroIRP, BaseDado, início, Path)
+                    checkbox = self.values["-IN-"]
+                    teste = self.values["-IN2-"]
+                    Programa(Login, Senha, NúmeroIRP, BaseDado, início, checkbox, teste)
 
     UserInterface = Gui()
     UserInterface.Iniciar()

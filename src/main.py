@@ -1,8 +1,8 @@
-from text_result import text_result
-from scrap_to_excel import scrap_to_excel
-from atas import atas
-from mytools import applyColor
-from irp import irp
+from modules.text_result import text_result
+from modules.scrap_to_excel import scrap_to_excel
+from modules.atas import atas
+from modules.mytools import applyColor
+from modules.irp import irp
 
 from os import system as cmd
 
