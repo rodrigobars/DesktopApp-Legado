@@ -1,35 +1,4 @@
 def atas():
-    #XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-    #   Checagem de dependências...   X
-    #XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-
-    import importlib.util
-    from os import system as cmd
-    from time import sleep
-
-    package_names = ['pip', 'selenium', 'webdriver_manager', 'openpyxl', 'win32com', 'pyautogui']
-
-    print('\nChecando dependências...\n')
-    for package in package_names.copy():
-        spec = importlib.util.find_spec(package)
-        if spec is not None:
-            package_names.remove(package)
-            print(f'{package:<20} OK')
-        else:
-            print(f'{package:<20} X')
-
-    if 'pip' in package_names:
-        cmd('python -m ensurepip')
-
-    if package_names:
-        print('\nInstalando dependências...\n')
-        for i in range(1,4):
-            print(i)
-            sleep(1)
-        cmd(f"pip install {' '.join(package_names)}")
-
-    #XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-
     from selenium.webdriver.common.by import By
     from selenium.webdriver.support.ui import WebDriverWait
     from selenium.webdriver.support import expected_conditions as EC
@@ -40,11 +9,11 @@ def atas():
     from datetime import date
     import pyautogui as gui
     import win32com.client as win32
-    import os
+    from os import system as cmd
 
     # Limpando o gen.py antes de ocorrer erro
-    os.system("powershell Remove-Item -path $env:LOCALAPPDATA\Temp\gen_py -recurse")
-    os.system("cls")
+    cmd("powershell Remove-Item -path $env:LOCALAPPDATA\Temp\gen_py -recurse")
+    cmd("cls")
 
     ################################
     # Consertando o documento Word #
@@ -84,7 +53,7 @@ def atas():
         dou = input("\nResultado do dou (Ex: 01/01/2000): ")+','
         ata_path = input("\nInsira o caminho da Ata: ")
         term_path = input("\nInsira o caminho do Termo: ")
-        os.system("cls")
+        cmd("cls")
         # Abrindo o programa Word e setando a visibilidade como verdadeira
         word = win32.gencache.EnsureDispatch('Word.Application')
         word.Visible = True
@@ -408,6 +377,3 @@ def atas():
         wordDoc=wordDocTerm[0])
     startTerms(companyInfo=companyInfo, term_path=wordDocTerm[1])
     print("Finalizado \U0001F7E2")
-
-if __name__ == '__main__':
-    atas()

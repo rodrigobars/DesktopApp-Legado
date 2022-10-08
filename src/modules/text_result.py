@@ -1,34 +1,5 @@
 def text_result():
-    #XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-    #   Checagem de dependências...   X
-    #XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-
-    import importlib.util
     from os import system as cmd
-    from time import sleep
-
-    package_names = ['pip', 'selenium', 'webdriver_manager']
-
-    print('\nChecando dependências...\n')
-    for package in package_names.copy():
-        spec = importlib.util.find_spec(package)
-        if spec is not None:
-            package_names.remove(package)
-            print(f'{package:<20} OK')
-        else:
-            print(f'{package:<20} X')
-
-    if 'pip' in package_names:
-        cmd('python -m ensurepip')
-
-    if package_names:
-        print('\nInstalando dependências...\n')
-        for i in range(1,4):
-            print(i)
-            sleep(1)
-        cmd(f"pip install {' '.join(package_names)}")
-
-    #XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 
     from selenium import webdriver
     from selenium.webdriver.chrome.service import Service as ChromeService
@@ -38,7 +9,7 @@ def text_result():
     from selenium.webdriver.support.ui import WebDriverWait
     from selenium.webdriver.support import expected_conditions as EC
 
-    from mytools import progress_bar, applyColor
+    from modules.mytools import progress_bar, applyColor
 
     # Inserindo o número do pregão
     cmd('cls')
@@ -310,6 +281,3 @@ def text_result():
             # print('\nESTA PUBLICAÇÃO EQUIVALE À PUBLICAÇÃO DA ATA DE\n REGISTRO DE PREÇOS.')
 
     input(applyColor("Concluído... \n\n    -Pressione 'Enter' para sair...\n", text_color = 5))
-
-if __name__ == '__main__':
-    text_result()

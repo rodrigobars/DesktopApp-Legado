@@ -1,35 +1,5 @@
 def scrap_to_excel():
-    #XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-    #   Checagem de dependências...   X
-    #XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-
-    import importlib.util
     from os import system as cmd
-    from time import sleep
-
-    package_names = ['pip', 'pandas', 'selenium', 'webdriver_manager', 'openpyxl']
-
-    print('\nChecando dependências...\n')
-    for package in package_names.copy():
-        spec = importlib.util.find_spec(package)
-        if spec is not None:
-            package_names.remove(package)
-            print(f'{package:<20} OK')
-        else:
-            print(f'{package:<20} X')
-
-    if 'pip' in package_names:
-        cmd('python -m ensurepip')
-
-    if package_names:
-        print('\nInstalando dependências...\n')
-        for i in range(1,4):
-            print(i)
-            sleep(1)
-        cmd(f"pip install {' '.join(package_names)}")
-
-    #XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-
     import pandas as pd
     from openpyxl.reader.excel import load_workbook
     from openpyxl.utils import get_column_letter
@@ -453,6 +423,3 @@ def scrap_to_excel():
     wb.save(Path)
 
     print('\nEstruturação Concluida! \U0001F47E')
-
-if __name__ == '__main__':
-    scrap_to_excel()
