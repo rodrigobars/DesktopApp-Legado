@@ -1,6 +1,7 @@
 def scrap_to_excel():
     from os import system as cmd
     import pandas as pd
+    from time import sleep
     from openpyxl.reader.excel import load_workbook
     from openpyxl.utils import get_column_letter
     from openpyxl.styles import Alignment
@@ -129,10 +130,10 @@ def scrap_to_excel():
             driver.switch_to.window(driver.window_handles[1])
             Captcha = wdw2.until(
                 EC.presence_of_element_located((By.XPATH, "//h2")))
-            if Captcha.text == "ACOMPANHAMENTO DE PREGÃO":
+            if Captcha.text == "ACOMPANHAMENTO DE LICITAÇÃO":
                 print("Preencha o CAPTCHA")
                 wdw.until(EC.presence_of_element_located(
-                    (By.CLASS_NAME, "pregao")))
+                    (By.XPATH, "//*[contains(text(), 'Pregão/Concorrência Eletrônica')]")))
 
             vencedor = 1
             for colocado in range(1, 6):
@@ -288,7 +289,7 @@ def scrap_to_excel():
 
     BaseDado = BaseDado.style.applymap(
         highlight_price, subset=pd.IndexSlice[list(BaseDado.query(
-            'ValorReferência < ValorFornecedor').index), 'ValorFornecedor']
+            "`VALOR DE REFERÊNCIA (unitário) (R$)` < `ValorFornecedor`").index), 'ValorFornecedor']
     ).applymap(
         highlight_desert, subset=pd.IndexSlice[list(
             BaseDado[BaseDado['Status'] == 'Item deserto'].index), 'Status']
