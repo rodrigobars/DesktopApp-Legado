@@ -9,27 +9,16 @@ def atas():
     from datetime import date
     import pyautogui as gui
     import win32com.client as win32
-    from os import system as cmd
+    import os
+    from modules.mytools import progress_bar
 
     # Limpando o gen.py antes de ocorrer erro
-    cmd("powershell Remove-Item -path $env:LOCALAPPDATA\Temp\gen_py -recurse")
-    cmd("cls")
+    os.system("powershell Remove-Item -path $env:LOCALAPPDATA\Temp\gen_py -recurse")
+    os.system("cls")
 
     ################################
     # Consertando o documento Word #
     ################################
-
-    input("""
-    ////////////////////////////////////////////////////////////////////////////
-    ///                                                                      ///
-    ///                           \U000026A0  Atenção!!! \U000026A0                            ///
-    ///                                                                      ///
-    /// Certifique-se de excluir a 'tabela modelo' de itens presente na ata. ///
-    ///                                                                      ///
-    /// para continuar, pressione qualquer tecla...                          ///
-    ///                                                                      ///
-    ////////////////////////////////////////////////////////////////////////////
-    """)
 
     def actual_month():
         month = {
@@ -53,7 +42,7 @@ def atas():
         dou = input("\nResultado do dou (Ex: 01/01/2000): ")+','
         ata_path = input("\nInsira o caminho da Ata: ")
         term_path = input("\nInsira o caminho do Termo: ")
-        cmd("cls")
+        os.system("cls")
         # Abrindo o programa Word e setando a visibilidade como verdadeira
         word = win32.gencache.EnsureDispatch('Word.Application')
         word.Visible = True
@@ -76,19 +65,7 @@ def atas():
         wordDoc.Content.GoTo(3, 1, 1).Select()
         find = word.Selection.Find
 
-        try:
-            find.Text = "...../...../20.....,"
-        except:
-            try:
-                find.Text = "xx/xx/20xx,"
-            except:
-                try:
-                    find.Text = "XX/XX/20XX,"
-                except:
-                    try:
-                        find.Text = "xx/xx/xxxx,"
-                    except:
-                        find.Text = "XX/XX/XXXX,"
+        find.Text = "...../...../20.....,"
 
         find.Replacement.Text = f"{dou}"
         find.Replacement.Highlight = False
@@ -106,11 +83,11 @@ def atas():
 
 
     def runStartWork(wordDoc):
+        wordDoc.Tables(1).Delete()
+
         content = wordDoc.Content
         content.Find.Text = "proposta(s) são as que seguem:"
         content.Find.Execute(Forward=True)
-
-        find = content.Find
 
         # Colocando o cursor no final do documento
         CurPos = content.Words(1).End
@@ -216,9 +193,6 @@ def atas():
             ###########################################################################################
 
             gui.hotkey('ctrl', 'c')
-            # Criar a função Switch
-            gui.getWindowsWithTitle('Google Chrome')[0].minimize()
-            gui.getWindowsWithTitle('Word')[0].maximize()
 
             wordDoc.Paragraphs.Add(wordDoc.Paragraphs(NumParagraphs+1).Range)
             wordDoc.Paragraphs.Add(wordDoc.Paragraphs(NumParagraphs+1).Range)
@@ -230,18 +204,10 @@ def atas():
             wordDoc.Paragraphs.Add(wordDoc.Paragraphs(NumParagraphs+1).Range)
             wordDoc.Paragraphs.Add(wordDoc.Paragraphs(NumParagraphs+1).Range)
 
-            gui.getWindowsWithTitle('Word')[0].minimize()
-            gui.getWindowsWithTitle('Google Chrome')[0].maximize()
-
             companyItens = int(((indexStartEnd[1]-indexStartEnd[0])-3)/2)
             start += int((companyItens*2)+1)
             end += 3
             startRealIndex += int((companyItens*2)+4)
-
-        # Preciso pegar o que estiver selecionado e colar no Word
-
-        gui.getWindowsWithTitle('Word')[0].minimize()
-        gui.getWindowsWithTitle('Word')[0].maximize()
 
         # Fechando o navegador
         driver.quit()
@@ -276,10 +242,6 @@ def atas():
             # Formatando as informações de cada empresa
             companyInfoDisplay = f"RAZÃO SOCIAL: {list(companyInfo.values())[abs(num_companys-i)]} \nCNPJ: {list(companyInfo.keys())[abs(num_companys-i)]} \nENDEREÇO: , CEP: \nTELEFONE: \nE-MAIL: \nDADOS BANCARIOS: \nREPRESENTANTE: , CPF: "
 
-
-            #companyInfoDisplay = f"RAZÃO SOCIAL: {list(companyInfo.values())[abs(num_tables-i)]} \nCNPJ: {list(companyInfo.keys())[abs(num_tables-i)]} \nENDEREÇO: , CEP: \nTELEFONE: \nE-MAIL: \nDADOS BANCARIOS: \nREPRESENTANTE: , CPF: "
-
-            #a = input('WTF')
             actual_table = wordDoc.Tables(i)
             actual_table.Cell(1, 1).Range.Delete()
             actual_table.Cell(1, 1).Range.InsertAfter(companyInfoDisplay)
@@ -301,8 +263,9 @@ def atas():
         word = win32.gencache.EnsureDispatch('Word.Application')
         word.Visible = True
 
-        for key, value in companyInfo.items():
-            print(key, value)
+        print(f"\nElaborando os Termos de Responsabilidade...\n")
+
+        for idx, (key, value) in enumerate(companyInfo.items()):
             sleep(1)
             # Lembrando que a procura parte de onde o cursos está para frente, por isso é necessário colocá-lo no início
             # Removendo parte do título
@@ -363,7 +326,6 @@ def atas():
                 sleep(1)
             keyAux = key
             valueAux = value
-                
 
         with open(rf"{os.path.dirname(term_path)}\\mails.txt", 'w') as mails:
             for companyName in companyInfo.values():

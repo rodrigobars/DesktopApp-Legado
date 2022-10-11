@@ -33,3 +33,11 @@ def applyColor(text, text_format = 1, text_color = 0, background_color = 0):
     """
 
     return f"\033[{str(text_format)};{'3'+str(text_color)};{'4'+str(background_color)}m{text}\033[m"
+
+#Preciso mexer aqui
+if __name__ == '__main__':
+    from time import sleep
+    for i in range(1,4):
+        print(i)
+        sleep(1)
+        progress_bar(i, 4)

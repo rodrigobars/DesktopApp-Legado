@@ -3,8 +3,7 @@ from modules.scrap_to_excel import scrap_to_excel
 from modules.atas import atas
 from modules.irp import irp
 from modules.mytools import applyColor
-
-from os import system as cmd    
+import os
 
 def main(module):
 
@@ -13,7 +12,6 @@ def main(module):
     #XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 
     import importlib.util
-    from os import system as cmd
     from time import sleep
 
     package_names = ['pip', 'pandas', 'selenium', 'webdriver_manager', 'openpyxl', 'win32com', 'jinja2', 'pyautogui', 'PySimpleGUI']
@@ -31,14 +29,14 @@ def main(module):
     print("=======================")
 
     if 'pip' in package_names:
-        cmd('python -m ensurepip')
+        os.system('python -m ensurepip')
 
     if package_names:
         print('\nInstalando dependências...\n')
         for i in range(1,4):
             print(abs(4-i))
             sleep(1)
-        cmd(f"pip install {' '.join(package_names)}")
+        os.system(f"pip install {' '.join(package_names)}")
 
     print('\nIniciando...\n')
     for i in range(1,4):
@@ -62,7 +60,7 @@ def main(module):
             irp()
 
 if __name__ == '__main__':
-    cmd('cls')
+    os.system('cls')
 
     module = 0
     while True:
@@ -82,7 +80,7 @@ if __name__ == '__main__':
         if module in ["1","2","3","4"]:
             break
         else:
-            cmd("cls")
+            os.system("cls")
             print(applyColor(">>> Informe um número válido <<<", text_color=1))
 
     main(module)
