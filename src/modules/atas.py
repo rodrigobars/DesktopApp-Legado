@@ -10,7 +10,7 @@ def atas():
     import pyautogui as gui
     import win32com.client as win32
     import os
-    from modules.mytools import progress_bar
+    #from modules.mytools import progress_bar
 
     # Limpando o gen.py antes de ocorrer erro
     os.system("powershell Remove-Item -path $env:LOCALAPPDATA\Temp\gen_py -recurse")
@@ -44,8 +44,10 @@ def atas():
         term_path = input("\nInsira o caminho do Termo: ")
         os.system("cls")
         # Abrindo o programa Word e setando a visibilidade como verdadeira
+
+        global word
         word = win32.gencache.EnsureDispatch('Word.Application')
-        word.Visible = True
+        word.Visible = False
 
         # Abrindo o caminho do documento Word
         wordDoc = word.Documents.Open(rf'{ata_path}')
@@ -99,6 +101,7 @@ def atas():
 
         # Informando o Path para o arquivo "chromedriver.exe" e armazenando em "driver"
         op = webdriver.ChromeOptions()
+        #op.add_argument("--headless")
         op.add_experimental_option("excludeSwitches", ["enable-logging"])
         driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()), options=op)
 
@@ -229,7 +232,8 @@ def atas():
                     actual_table.Cell(line, 4).Merge(
                         wordDoc.Tables(i).Cell(line, 5))
                     actual_table.Cell(line+1, 0).Range.Select()
-                    gui.hotkey('ctrl', 'l')
+                    word.Selection.Paragraphs.Alignment = 0
+                    #gui.hotkey('ctrl', 'l')
                     line += 2
                 except:
                     endOfTable = True
@@ -261,7 +265,7 @@ def atas():
 
     def startTerms(companyInfo, term_path):
         word = win32.gencache.EnsureDispatch('Word.Application')
-        word.Visible = True
+        word.Visible = False
 
         print(f"\nElaborando os Termos de Responsabilidade...\n")
 
