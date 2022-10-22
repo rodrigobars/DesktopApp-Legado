@@ -10,15 +10,10 @@ def atas():
     import pyautogui as gui
     import win32com.client as win32
     import os
-    #from modules.mytools import progress_bar
 
     # Limpando o gen.py antes de ocorrer erro
     os.system("powershell Remove-Item -path $env:LOCALAPPDATA\Temp\gen_py -recurse")
     os.system("cls")
-
-    ################################
-    # Consertando o documento Word #
-    ################################
 
     def actual_month():
         month = {
@@ -45,13 +40,12 @@ def atas():
         os.system("cls")
         # Abrindo o programa Word e setando a visibilidade como verdadeira
 
-        global word
         word = win32.gencache.EnsureDispatch('Word.Application')
-        word.Visible = False
+        #word.Visible = False
 
         # Abrindo o caminho do documento Word
         wordDoc = word.Documents.Open(rf'{ata_path}')
-        gui.getWindowsWithTitle('Word')[0].minimize()
+        #gui.getWindowsWithTitle('Word')[0].minimize()
 
         # Consertando os títulos
         wordDoc.Content.GoTo(3, 1, 1).Select()
@@ -67,7 +61,7 @@ def atas():
         wordDoc.Content.GoTo(3, 1, 1).Select()
         find = word.Selection.Find
 
-        find.Text = "...../...../20.....,"
+        find.Text = "xx/xx/20xx"
 
         find.Replacement.Text = f"{dou}"
         find.Replacement.Highlight = False
@@ -85,7 +79,8 @@ def atas():
 
 
     def runStartWork(wordDoc):
-        wordDoc.Tables(1).Delete()
+        if wordDoc.Tables:
+            wordDoc.Tables(1).Delete()
 
         content = wordDoc.Content
         content.Find.Text = "proposta(s) são as que seguem:"
@@ -265,7 +260,7 @@ def atas():
 
     def startTerms(companyInfo, term_path):
         word = win32.gencache.EnsureDispatch('Word.Application')
-        word.Visible = False
+        #word.Visible = False
 
         print(f"\nElaborando os Termos de Responsabilidade...\n")
 
@@ -309,7 +304,7 @@ def atas():
                 find.Execute(Replace=1, Forward=True)
                 sleep(1)
                 wordDoc.SaveAs2(
-                    rf"{os.path.dirname(term_path)}\\{' '.join(value.split()[0:2]).upper()}", 16)
+                    rf"{os.path.dirname(term_path)}\{(' '.join(value.split()[0:2]).replace('/', '.')).upper()}.docx", 16)
             else:
                 # Preenchendo com o nome da empresa
                 wordDoc.Content.GoTo(3, 1, 1).Select()
@@ -326,7 +321,7 @@ def atas():
                 find.Execute(Replace=1, Forward=True)
                 sleep(1)
                 wordDoc.SaveAs2(
-                    rf"{os.path.dirname(term_path)}\\{' '.join(value.split()[0:2]).upper()}", 16)
+                    rf"{os.path.dirname(term_path)}\{(' '.join(value.split()[0:2]).replace('/', '.')).upper()}.docx", 16)
                 sleep(1)
             keyAux = key
             valueAux = value
