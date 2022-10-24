@@ -40,6 +40,7 @@ def atas():
         os.system("cls")
         # Abrindo o programa Word e setando a visibilidade como verdadeira
 
+        global word
         word = win32.gencache.EnsureDispatch('Word.Application')
         #word.Visible = False
 
@@ -228,7 +229,6 @@ def atas():
                         wordDoc.Tables(i).Cell(line, 5))
                     actual_table.Cell(line+1, 0).Range.Select()
                     word.Selection.Paragraphs.Alignment = 0
-                    #gui.hotkey('ctrl', 'l')
                     line += 2
                 except:
                     endOfTable = True

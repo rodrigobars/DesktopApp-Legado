@@ -60,7 +60,7 @@ def main(module):
             irp()
 
 if __name__ == '__main__':
-    #os.system('cls')
+    os.system('cls')
 
     module = 0
     while True:
