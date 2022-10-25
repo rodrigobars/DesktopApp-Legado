@@ -9,13 +9,14 @@ def text_result():
     from selenium.webdriver.support.ui import WebDriverWait
     from selenium.webdriver.support import expected_conditions as EC
 
-    from modules.mytools import progress_bar, applyColor
+    from modules.mytools import progress_bar, applyColor, loading
 
     # Inserindo o número do pregão
     cmd('cls')
     Pregao = input('\n'+applyColor("Digite o número do pregão (Ex: 12020): ", text_color = 5))
     Path = input('\n'+applyColor("Insira o caminho onde deseja salvar o Resultado de Julgamento: ", text_color = 5))
-
+    cmd('cls')
+    
     # Iniciando o carregamento da página
     url = "http://comprasnet.gov.br/livre/pregao/ata0.asp"
 
@@ -49,6 +50,41 @@ def text_result():
     )
     PrClick.click()
 
+    ######################################################################
+    # HOMOLOGAÇÃO
+
+    wdw.until(
+        EC.presence_of_element_located((By.XPATH, "//input[@name='termodehomologacao']")
+    )).click()
+    
+    itensHomolog = []
+
+    hasNextPage = True
+
+    print(applyColor('\nVerificando itens homologados...\n', text_color=5))
+
+    loading = loading()
+
+    while hasNextPage:
+        try:
+            homolog = driver.find_elements(By.XPATH, "//tbody[tr/td/table/tbody/tr/td[text()[contains(., 'Homologado')]]]/tr[1]/td[contains(text(), 'Item:')]")
+        except:
+            homolog = None
+
+        if homolog != None and homolog.__len__() > 0:
+            for item in range(homolog.__len__()):
+                itensHomolog.append(int(homolog[item].text[6:]))
+                print(applyColor(next(loading), text_color=5), end='\r')
+
+        try:
+            driver.find_element(By.ID, "proximas")
+            driver.execute_script("javascript:PaginarItens('Proxima');")
+        except:
+            hasNextPage = False
+
+    driver.execute_script("javascript:voltar();")
+    ######################################################################
+
     Owners = wdw.until(
         EC.presence_of_element_located(
             (By.XPATH, "//input[@id='btnResultadoFornecr']")
@@ -62,12 +98,11 @@ def text_result():
     box = {}
 
     indexStartEnd = [1]
-    companyInfo = {}
     start = 0
     end = 2
     startRealIndex = 1
 
-    print('\n'+applyColor(f" Empresas: {num_companys} ", text_color = 0, background_color = 5)+'\n')
+    print('\n'+applyColor(f"\n Empresas: {num_companys} ", text_color = 0, background_color = 5)+'\n')
     print(applyColor('Iniciando a coleta dos itens por empresa...', text_color=5))
 
     for company in range(1, num_companys+1):
@@ -126,19 +161,20 @@ def text_result():
 
         itens = []
         for item in range(1,companyItens+1):
-            itens.append(int(wdw.until(EC.presence_of_element_located(
-                    (By.XPATH, f'/html/body/table[2]/tbody/tr[{startRealIndex+item*2}]/td[1]'))).text))
+            item_atual = int(wdw.until(EC.presence_of_element_located(
+                    (By.XPATH, f'/html/body/table[2]/tbody/tr[{startRealIndex+item*2}]/td[1]'))).text)
+            if item_atual in itensHomolog:
+                itens.append(item_atual)
         
-        empresaFormatada = f"{name}({cnpj}):{(str(itens)[1:-1]).replace(' ', '')}"
+        if itens:
+            empresaFormatada = f"{name}({cnpj}):{(str(itens)[1:-1]).replace(' ', '')}"
 
-        if company!=num_companys:
-            empresaFormatada+=';'
-        else:
-            empresaFormatada+='.'
+            if company!=num_companys:
+                empresaFormatada+=';'
+            else:
+                empresaFormatada+='.'
 
-        box.update({f"{company}":f" {empresaFormatada}"})
-
-        #print(empresaFormatada)
+            box.update({f"{company}":f" {empresaFormatada}"})
 
         start += int((companyItens*2)+1)
         end += 3
@@ -191,19 +227,22 @@ def text_result():
         )
     )
 
-    try:
-        itensCancelados = driver.find_elements(By.XPATH, "//tbody[tr/td/table/tbody/tr/td[text()[contains(., 'Cancelado no julgamento')]]]/tr[1]/td")
-    except:
+
+    itensCancelados = driver.find_elements(By.XPATH, "//tbody[tr/td/table/tbody/tr/td[text()[contains(., 'Cancelado no julgamento')]]]/tr[1]/td[contains(text(), 'Item')]")
+    if not itensCancelados:
         itensCancelados = None
 
-    try:
-        itensDesertos = driver.find_elements(By.XPATH, "//tbody[tr/td/table/tbody/tr/td[text()[contains(., 'Cancelado por inexistência de proposta')]]]/tr[1]/td")
-    except:
+    itensDesertos = driver.find_elements(By.XPATH, "//tbody[tr/td/table/tbody/tr/td[text()[contains(., 'Cancelado por inexistência de proposta')]]]/tr[1]/td[contains(text(), 'Item')]")
+    if not itensDesertos:
         itensDesertos = None
 
-    if itensCancelados != None and itensCancelados.__len__() > 1:
+    itensRecurso = driver.find_elements(By.XPATH, "//tbody[tr/td/table/tbody/tr/td[text()[contains(., 'intenção de recurso')]]]/tr[1]/td[contains(text(), 'Item')]")
+    if not itensRecurso:
+        itensRecurso = None
+
+    if itensCancelados != None:
         itensCanc = []
-        for item in range(itensCancelados.__len__()-1):
+        for item in range(itensCancelados.__len__()):
             itensCanc.append(int(itensCancelados[item].text[6:]))
         if itensCancelados.__len__() == 2:
             canceladoPlural = ' ITEM CANCELADO:'
@@ -213,7 +252,7 @@ def text_result():
     else:
         itensCancelados = False
 
-    if itensDesertos != None and itensDesertos.__len__() > 0:
+    if itensDesertos != None:
         itensDese = []
         for item in range(itensDesertos.__len__()):
             itensDese.append(int(itensDesertos[item].text[6:]))
@@ -225,6 +264,18 @@ def text_result():
     else:
         itensDesertos = False
 
+    if itensRecurso != None:
+        itensRecu = []
+        for item in range(itensRecurso.__len__()-1):
+            itensRecu.append(int(itensRecurso[item].text[6:]))
+        if itensRecurso.__len__() == 1:
+            desertoPlural = ' ITEM EM RECURSO:'
+        else:
+            desertoPlural = ' ITENS EM RECURSO:'
+        itensRecu = (desertoPlural+(str(itensRecu)[1:-1]).replace(' ', ''))+'.'
+    else:
+        itensRecurso = False
+
     aux = num_companys
     if itensCancelados is not False:
         aux+=1
@@ -232,9 +283,6 @@ def text_result():
     if itensDesertos is not False:
         aux+=1
         box.update({f'{aux}':f'{itensDese}'})
-
-    # for key, value in box.items():
-    #         print(key, value)
 
     def Text(num_pregao, num_companys, box):
         if num_companys > 1:
@@ -255,29 +303,33 @@ def text_result():
 
     qtdlinhas = content.__len__()/47
 
-    #text_path = r"C:\Users\Rodrigo.DESKTOP-ST2DND8\Desktop\Work\Texto de Resultado\2022"
-
     auxStart = 0
     auxEnd = 48
 
     with open(rf"{Path}\\texto de resultado {Pregao[:-4]}.2022.txt", 'w') as texto_resultado:
         if type(qtdlinhas) == int:
             for linha in range(qtdlinhas):
-                # print(content[auxStart:auxEnd])
                 texto_resultado.write(f"{content[auxStart:auxEnd]}\n")
                 auxStart = auxEnd
                 auxEnd += 47
             texto_resultado.write('\nESTA PUBLICAÇÃO EQUIVALE À PUBLICAÇÃO DA ATA DE\n REGISTRO DE PREÇOS.')
         else:
             for linha in range(int(qtdlinhas)+1):
-                # print(content[auxStart:auxEnd])
                 texto_resultado.write(f"{content[auxStart:auxEnd]}\n")
                 if linha==qtdlinhas:
                     texto_resultado.write(f"{content[auxStart:(auxEnd+qtdlinhas%47)]}")
-                    # print(content[auxStart:(auxEnd+qtdlinhas%47)])
                 auxStart = auxEnd
                 auxEnd += 47
             texto_resultado.write('\nESTA PUBLICAÇÃO EQUIVALE À PUBLICAÇÃO DA ATA DE\n REGISTRO DE PREÇOS.')
-            # print('\nESTA PUBLICAÇÃO EQUIVALE À PUBLICAÇÃO DA ATA DE\n REGISTRO DE PREÇOS.')
 
-    input(applyColor("Concluído... \n\n    -Pressione 'Enter' para sair...\n", text_color = 5))
+    print('-------------------------- Resumo dos itens do pregão --------------------------')
+    print(applyColor(f">>>  ITENS HOMOLOGADOS:{str(itensHomolog)[1:-1].replace(' ', '')+'.'}", text_color = 2))
+    if itensCancelados:
+        print(applyColor(f">>> {itensCanc}", text_color=1))
+    if itensDesertos:
+        print(applyColor(f">>> {itensDese}", text_color=1))
+    if itensRecurso:
+        print(applyColor(f">>> {itensRecu}", text_color=3))
+    print('--------------------------------------------------------------------------------')
+
+    input(applyColor("\nConcluído... \n\n    -Pressione 'Enter' para sair...\n", text_color = 5))

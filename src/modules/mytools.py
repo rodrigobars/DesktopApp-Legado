@@ -34,6 +34,14 @@ def applyColor(text, text_format = 1, text_color = 0, background_color = 0):
 
     return f"\033[{str(text_format)};{'3'+str(text_color)};{'4'+str(background_color)}m{text}\033[m"
 
+def loading():
+    dot = "."
+    while True:
+        yield dot
+        dot += "."
+        if dot == "....":
+            dot = "."
+
 #Preciso mexer aqui
 if __name__ == '__main__':
     from time import sleep
