@@ -53,9 +53,11 @@ def text_result():
     ######################################################################
     # HOMOLOGAÇÃO
 
-    wdw.until(
-        EC.presence_of_element_located((By.XPATH, "//input[@name='termodehomologacao']")
-    )).click()
+    try:
+        driver.find_element(By.XPATH, "//input[@name='termodehomologacao']").click()
+    except:
+        print(applyColor("Não houveram itens homologados até o momento!\n", text_color=1))
+        return
     
     itensHomolog = []
 
