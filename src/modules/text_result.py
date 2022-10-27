@@ -57,6 +57,7 @@ def text_result():
         driver.find_element(By.XPATH, "//input[@name='termodehomologacao']").click()
     except:
         print(applyColor("Não houveram itens homologados até o momento!\n", text_color=1))
+        input(applyColor("   -Pressione 'Enter' para sair...\n", text_color = 5))
         return
     
     itensHomolog = []
@@ -114,9 +115,6 @@ def text_result():
             '''
         )
 
-    #
-
-        # Preciso checar quantos itens a empresa tem...
         indexStartEnd = driver.execute_script(f"""
             // Selecionando a empresa na tabela
             range = document.createRange();

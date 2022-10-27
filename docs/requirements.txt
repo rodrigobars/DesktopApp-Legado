@@ -1,7 +1,8 @@
-selenium
 pandas
+selenium
 webdriver_manager
-PySimpleGUI
-pyautogui
 openpyxl
 win32com
+jinja2
+pyautogui
+PySimpleGUI
