@@ -167,14 +167,14 @@ def text_result():
                 itens.append(item_atual)
         
         if itens:
-            empresaFormatada = f"{name}({cnpj}):{(str(itens)[1:-1]).replace(' ', '')}"
+            empresaFormatada = f" {name}({cnpj}):{(str(itens)[1:-1]).replace(' ', '')}"
 
             if company!=num_companys:
                 empresaFormatada+=';'
             else:
                 empresaFormatada+='.'
 
-            box.update({f"{company}":f" {empresaFormatada}"})
+            box.update({company:empresaFormatada})
 
         start += int((companyItens*2)+1)
         end += 3

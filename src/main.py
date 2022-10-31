@@ -62,11 +62,10 @@ def main(module):
 if __name__ == '__main__':
     os.system('cls')
 
-    module = 0
     while True:
         module = input(
         applyColor('''
-        _________________________________________
+         _________________________________________
         |                                         |
         |   1 : Ata e Termos de Responsabilidade  |
         |   2 : Planilha de empresas vencedoras   |

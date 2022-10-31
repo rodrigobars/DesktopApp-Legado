@@ -12,7 +12,6 @@ def progress_bar(progress, total, color=colorama.Fore.MAGENTA):
         print(colorama.Fore.RESET, '\n\n')
 
 def applyColor(text, text_format = 1, text_color = 0, background_color = 0):
-
     """
     text format code:
     - 1 - None
@@ -31,7 +30,6 @@ def applyColor(text, text_format = 1, text_color = 0, background_color = 0):
     - 6    - light blue
     - 7    - gray
     """
-
     return f"\033[{str(text_format)};{'3'+str(text_color)};{'4'+str(background_color)}m{text}\033[m"
 
 def loading():
