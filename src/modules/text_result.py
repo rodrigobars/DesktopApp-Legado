@@ -43,12 +43,13 @@ def text_result():
 
     driver.execute_script("ValidaForm();")
 
-    PrClick = wdw.until(
-        EC.presence_of_element_located(
-            (By.XPATH, "//a[contains(text(), '{}')]".format(Pregao))
-        )
-    )
-    PrClick.click()
+    try:
+        driver.find_element(By.XPATH, "//a[contains(text(), '{}')]".format(Pregao)).click()
+    except:
+        #driver.find_element(By.XPATH, "//center[@class= 'mensagem'][text()[contains(.,'Nenhuma Ata Encontrada.')]]")
+        print(applyColor("Pregão não disponível!\n", text_color=1))
+        input(applyColor("   -Pressione 'Enter' para sair...\n", text_color = 5))
+        return
 
     ######################################################################
     # HOMOLOGAÇÃO
@@ -104,8 +105,7 @@ def text_result():
     start = 0
     end = 2
     startRealIndex = 1
-
-    print('\n'+applyColor(f"\n Empresas: {num_companys} ", text_color = 0, background_color = 5)+'\n')
+    print('\n  '+applyColor(f"\n Empresas: {num_companys} ", text_color = 7, background_color = 5)+'\n')
     print(applyColor('Iniciando a coleta dos itens por empresa...', text_color=5))
 
     for company in range(1, num_companys+1):
@@ -227,7 +227,6 @@ def text_result():
         )
     )
 
-
     itensCancelados = driver.find_elements(By.XPATH, "//tbody[tr/td/table/tbody/tr/td[text()[contains(., 'Cancelado no julgamento')]]]/tr[1]/td[contains(text(), 'Item')]")
     if not itensCancelados:
         itensCancelados = None
@@ -331,5 +330,7 @@ def text_result():
     if itensRecurso:
         print(applyColor(f">>> {itensRecu}", text_color=3))
     print('--------------------------------------------------------------------------------')
+
+    driver.quit()
 
     input(applyColor("\nConcluído... \n\n    -Pressione 'Enter' para sair...\n", text_color = 5))
