@@ -87,7 +87,6 @@ def text_result():
             hasNextPage = False
 
     driver.execute_script("javascript:voltar();")
-    ######################################################################
 
     Owners = wdw.until(
         EC.presence_of_element_located(
@@ -276,10 +275,10 @@ def text_result():
         itensRecurso = False
 
     aux = num_companys
-    if itensCancelados is not False:
+    if itensCancelados:
         aux+=1
         box.update({f'{aux}':f'{itensCanc}'})
-    if itensDesertos is not False:
+    if itensDesertos:
         aux+=1
         box.update({f'{aux}':f'{itensDese}'})
 

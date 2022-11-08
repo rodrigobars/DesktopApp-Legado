@@ -9,6 +9,7 @@ def irp():
     from webdriver_manager.chrome import ChromeDriverManager
     import PySimpleGUI as gui
     from math import ceil
+    from time import sleep
 
     ############################################################################
 
@@ -101,6 +102,15 @@ def irp():
                     driver.switch_to.window(Janelas[0])
                     # Aqui na hora de salvar abriu um pop-up, portanto, devemos fecha-lo
 
+    def CloseNotification(driver):
+        Janelas = driver.window_handles
+        if len(Janelas)==2:
+            atual = Janelas[0]
+            driver.switch_to.window(Janelas[1])
+            driver.close()
+            driver.switch_to.window(atual)
+
+
     def Inclusão_Item(x, driver, início, checkbox, teste):
 
         if teste == True:
@@ -125,6 +135,9 @@ def irp():
                 aux2 = 20
             sleep(1)
             driver.find_element(By.XPATH, f"//*[@id='itensIRP']/tbody/tr[{aux2}]/td[9]/a").click()
+
+            sleep(1)
+            CloseNotification(driver)
 
             # Seleciona o critério de valor
             CritérioDeValor(driver)
