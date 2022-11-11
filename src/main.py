@@ -2,69 +2,17 @@ from modules.text_result import text_result
 from modules.scrap_to_excel import scrap_to_excel
 from modules.atas import atas
 from modules.irp import irp
-from modules.mytools import applyColor
+from modules.mytools import applyColor, check_packages
+from time import sleep
 import os
 
-def main(module):
-
-    #XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-    #   Checagem de dependências...   X
-    #XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-
-    import importlib.util
-    from time import sleep
-
-    package_names = ['pip', 'pandas', 'selenium', 'webdriver_manager', 'openpyxl', 'win32com', 'jinja2', 'pyautogui', 'PySimpleGUI']
-
-    print('\nChecando dependências...\n')
-
-    print("=======================")
-    for package in package_names.copy():
-        spec = importlib.util.find_spec(package)
-        if spec is not None:
-            package_names.remove(package)
-            print(f'{package:<20} OK')
-        else:
-            print(f'{package:<20} X')
-    print("=======================")
-
-    if 'pip' in package_names:
-        os.system('python -m ensurepip')
-
-    if package_names:
-        print('\nInstalando dependências...\n')
-        for i in range(1,4):
-            print(abs(4-i))
-            sleep(1)
-        os.system(f"pip install {' '.join(package_names)}")
-
-    print('\nIniciando...\n')
-    for i in range(1,4):
-        print(abs(4-i))
-        sleep(1)
-
-    #XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-
-    match module:
-
-        case '1':
-            atas()
-
-        case '2':
-            scrap_to_excel()
-
-        case '3':
-            text_result()
-
-        case '4':
-            irp()
-
-if __name__ == '__main__':
+def main():
     os.system('cls')
 
-    while True:
-        module = input(
-        applyColor('''
+    menu_options = {'1':atas, '2':scrap_to_excel, '3':text_result, '4':irp}
+    
+    def set_menu_options():
+        table_menu = '''
          _________________________________________
         |                                         |
         |   1 : Ata e Termos de Responsabilidade  |
@@ -72,14 +20,25 @@ if __name__ == '__main__':
         |   3 : Resultado de julgamento           |
         |   4 : IRP                               |
         |_________________________________________|
-        
-        Código do módulo: ''', text_color=2)
-        )
 
-        if module in ["1","2","3","4"]:
-            break
-        else:
-            os.system("cls")
-            print(applyColor(">>> Informe um número válido <<<", text_color=1))
+        Código do módulo: '''
 
-    main(module)
+        module = input(applyColor(table_menu, text_color=2))
+        return module
+
+    while (module := set_menu_options()) not in menu_options.keys():
+       os.system('cls')
+       print(applyColor(f"{'':<8}>>> Informe um número válido <<<", text_color=1), end='\r')
+
+    # Verifica se as dependências estão instaladas
+    check_packages()
+
+    print('\nIniciando...\n')
+    for i in range(1,4):
+        print(abs(4-i))
+        sleep(1)
+
+    menu_options[module]()
+
+if __name__ == '__main__':
+    main()

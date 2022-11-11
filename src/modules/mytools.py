@@ -40,10 +40,31 @@ def loading():
         if dot == "....":
             dot = "."
 
-#Preciso mexer aqui
-if __name__ == '__main__':
+def check_packages():
+    import importlib.util
     from time import sleep
-    for i in range(1,4):
-        print(i)
-        sleep(1)
-        progress_bar(i, 4)
+    import os
+
+    package_names = ['pip', 'pandas', 'selenium', 'webdriver_manager', 'openpyxl', 'win32com', 'jinja2', 'pyautogui', 'PySimpleGUI']
+
+    print('\nChecando dependências...\n')
+
+    print("=======================")
+    for package in package_names.copy():
+        spec = importlib.util.find_spec(package)
+        if spec is not None:
+            package_names.remove(package)
+            print(f'{package:<20} OK')
+        else:
+            print(f'{package:<20} X')
+    print("=======================")
+
+    if 'pip' in package_names:
+        os.system('python -m ensurepip')
+
+    if package_names:
+        print('\nInstalando dependências...\n')
+        for i in range(1,4):
+            print(abs(4-i))
+            sleep(1)
+        os.system(f"pip install {' '.join(package_names)}")
