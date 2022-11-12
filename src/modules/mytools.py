@@ -32,13 +32,36 @@ def applyColor(text, text_format = 1, text_color = 0, background_color = 0):
     """
     return f"\033[{str(text_format)};{'3'+str(text_color)};{'4'+str(background_color)}m{text}\033[m"
 
-def loading():
-    dot = "."
+def loading_dots():
+    dot = "-"
+    idx2 = 1
+    side = '>'
     while True:
         yield dot
-        dot += "."
-        if dot == "....":
-            dot = "."
+        if side == '>':
+            idx2 += 1
+            if idx2==5:    
+                dot += "-"
+                idx2 = 1
+            if dot == "----":
+                dot = 'ˍ'
+                side = '<'
+        if side == '<':
+            idx2 += 1
+            if idx2==5:    
+                dot += "ˍ"
+                idx2 = 1
+            if dot == "ˍˍˍˍ":
+                dot = '-'
+                side = '>'
+
+def loading_circle():
+    simbol = {1:'◜', 2:'◝', 3:'◞', 4:'◟'}
+    idx = 1
+    while True:
+        yield simbol[idx]
+        idx += 1
+        if idx == 5: idx = 1
 
 def check_packages():
     import importlib.util

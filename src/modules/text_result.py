@@ -9,7 +9,7 @@ def text_result():
     from selenium.webdriver.support.ui import WebDriverWait
     from selenium.webdriver.support import expected_conditions as EC
 
-    from modules.mytools import progress_bar, applyColor, loading
+    from modules.mytools import progress_bar, applyColor, loading_circle, loading_dots
 
     # Inserindo o número do pregão
     cmd('cls')
@@ -67,7 +67,8 @@ def text_result():
 
     print(applyColor('\nVerificando itens homologados...\n', text_color=5))
 
-    loading = loading()
+    load_circle = loading_circle()
+    load_dots = loading_dots()
 
     while hasNextPage:
         try:
@@ -78,7 +79,7 @@ def text_result():
         if homolog != None and homolog.__len__() > 0:
             for item in range(homolog.__len__()):
                 itensHomolog.append(int(homolog[item].text[6:]))
-                print(applyColor(next(loading), text_color=5), end='\r')
+                print(f"  ({applyColor(next(load_circle), text_format=3, text_color=2)}) Processando{next(load_dots)}", end='\r')
 
         try:
             driver.find_element(By.ID, "proximas")
