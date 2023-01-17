@@ -243,7 +243,7 @@ def text_result():
         itensCanc = []
         for item in range(itensCancelados.__len__()):
             itensCanc.append(int(itensCancelados[item].text[6:]))
-        if itensCancelados.__len__() == 2:
+        if itensCancelados.__len__() == 1:
             canceladoPlural = ' ITEM CANCELADO:'
         else:
             canceladoPlural = ' ITENS CANCELADOS:'
@@ -265,7 +265,7 @@ def text_result():
 
     if itensRecurso != None:
         itensRecu = []
-        for item in range(itensRecurso.__len__()-1):
+        for item in range(itensRecurso.__len__()):
             itensRecu.append(int(itensRecurso[item].text[6:]))
         if itensRecurso.__len__() == 1:
             desertoPlural = ' ITEM EM RECURSO:'

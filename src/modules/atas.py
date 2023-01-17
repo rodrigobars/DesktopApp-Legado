@@ -13,7 +13,7 @@ def atas():
 
     # Limpando o gen.py antes de ocorrer erro
     os.system("powershell Remove-Item -path $env:LOCALAPPDATA\Temp\gen_py -recurse")
-    os.system("cls")
+    #os.system("cls")
 
     def actual_month():
         month = {
@@ -37,12 +37,12 @@ def atas():
         dou = input("\nResultado do dou (Ex: 01/01/2000): ")+','
         ata_path = input("\nInsira o caminho da Ata: ")
         term_path = input("\nInsira o caminho do Termo: ")
-        os.system("cls")
+        #os.system("cls")
         # Abrindo o programa Word e setando a visibilidade como verdadeira
 
         global word
         word = win32.gencache.EnsureDispatch('Word.Application')
-        #word.Visible = False
+        word.Visible = True
 
         # Abrindo o caminho do documento Word
         wordDoc = word.Documents.Open(rf'{ata_path}')
@@ -70,6 +70,11 @@ def atas():
 
         wordDoc.Content.GoTo(3, 1, 1).Select()
 
+        # Apaga todas as tabelas do documento
+        n_tables = len(word.ActiveDocument.Tables)
+        for i in range(1, n_tables+1):
+            word.ActiveDocument.Tables(i).Delete()
+
         return wordDoc, term_path
 
     #####################################
@@ -80,9 +85,6 @@ def atas():
 
 
     def runStartWork(wordDoc):
-        if wordDoc.Tables:
-            wordDoc.Tables(1).Delete()
-
         content = wordDoc.Content
         content.Find.Text = "proposta(s) são as que seguem:"
         content.Find.Execute(Forward=True)
@@ -245,12 +247,10 @@ def atas():
             actual_table.Cell(1, 1).Range.Delete()
             actual_table.Cell(1, 1).Range.InsertAfter(companyInfoDisplay)
 
-
-            # Mudando nome da fonte, tamanho e negrito
-            textSelected = actual_table.Cell(1, 1).Range.Font
-            textSelected.Name = "Calibri"
-            textSelected.Size = "10,5"
-            textSelected.Bold = True
+            # textSelected = actual_table.Cell(1, 1).Range.Font
+            # textSelected.Name = "Calibri"
+            # textSelected.Size = "10,5"
+            # textSelected.Bold = True
 
         # Salva as alterações pendentes no mesmo arquivo automaticamente, sem solicitar ao usuário se -1
         wordDoc.Close(-1, 0)
@@ -261,8 +261,6 @@ def atas():
     def startTerms(companyInfo, term_path):
         word = win32.gencache.EnsureDispatch('Word.Application')
         #word.Visible = False
-
-        print(f"\nElaborando os Termos de Responsabilidade...\n")
 
         for idx, (key, value) in enumerate(companyInfo.items()):
             sleep(1)
@@ -332,9 +330,12 @@ def atas():
 
         word.Quit()
 
-    Pregao = str(input("Digite o número do pregão (Ex: 12000): "))
-    wordDocTerm = startWord()
-    companyInfo = runStartWork(
-        wordDoc=wordDocTerm[0])
-    startTerms(companyInfo=companyInfo, term_path=wordDocTerm[1])
-    print("Finalizado \U0001F7E2")
+    try:
+        Pregao = str(input("Digite o número do pregão (Ex: 12000): "))
+        wordDocTerm = startWord()
+        companyInfo = runStartWork(
+            wordDoc=wordDocTerm[0])
+        startTerms(companyInfo=companyInfo, term_path=wordDocTerm[1])
+        print("Finalizado \U0001F7E2")
+    except:
+        word.Quit()

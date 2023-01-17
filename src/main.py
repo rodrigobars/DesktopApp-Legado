@@ -27,7 +27,7 @@ def main():
         return module
 
     while (module := set_menu_options()) not in menu_options.keys():
-       os.system('cls')
+       #os.system('cls')
        print(applyColor(f"{'':<8}>>> Informe um número válido <<<", text_color=1), end='\r')
 
     # Verifica se as dependências estão instaladas
