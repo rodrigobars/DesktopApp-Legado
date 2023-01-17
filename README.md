@@ -1,1 +1,1 @@
-Some RPA scripts to execute the repetitive manual work, involves automating: 'Word', 'Excel' and the WebBrowser 'Google Chrome'.
+Scripts python para automação de atividades relacionadas a licitação, como raspagem de dados, elaboração de documentos e planilhas.
